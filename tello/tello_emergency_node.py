@@ -16,7 +16,7 @@ class TelloControlNode(Node):
         self._send_command('command')
 
         # Set subscription
-        self.sub_command = self.create_subscription(Empty, 'tello/emergency', self.callback_emergency, 1)
+        self.sub_command = self.create_subscription(Empty, 'tello/emergency', self.callback_emergency, 10)
 
 
     def _send_command(self, command: str):

@@ -1,0 +1,9 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/lucas/blackbee_ws/install/tello/lib/python3.12/site-packages",
+        "/home/lucas/blackbee_ws/build/mirela_sdk",
+        "/home/lucas/blackbee_ws/install/mirela_sdk/lib/python3.12/site-packages",
+        "/home/lucas/blackbee_ws/install/mirela_interfaces/lib/python3.12/site-packages",
+        "/opt/ros/jazzy/lib/python3.12/site-packages"
+    ]
+}

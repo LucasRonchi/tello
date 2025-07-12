@@ -38,15 +38,15 @@ class TelloStateNode(Node):
         )
 
         # Set publisher
-        self.pub_attitude = self.create_publisher(Vector3, 'tello/state/attitude')
-        self.pub_speed = self.create_publisher(Vector3, 'tello/state/speed')
-        self.pub_templ = self.create_publisher(UInt8, 'tello/state/templ')
-        self.pub_temph = self.create_publisher(UInt8, 'tello/state/temph')
-        self.pub_tof = self.create_publisher(UInt8, 'tello/state/tof')
-        self.pub_h = self.create_publisher(Int8, 'tello/state/h')
-        self.pub_bat = self.create_publisher(UInt8, 'tello/state/bat')
-        self.pub_baro = self.create_publisher(Float32, 'tello/state/baro')
-        self.pub_time = self.create_publisher(UInt16, 'tello/state/time')
+        self.pub_attitude     = self.create_publisher(Vector3, 'tello/state/attitude')
+        self.pub_speed        = self.create_publisher(Vector3, 'tello/state/speed')
+        self.pub_templ        = self.create_publisher(UInt8,   'tello/state/templ')
+        self.pub_temph        = self.create_publisher(UInt8,   'tello/state/temph')
+        self.pub_tof          = self.create_publisher(UInt8,   'tello/state/tof')
+        self.pub_h            = self.create_publisher(Int8,    'tello/state/h')
+        self.pub_bat          = self.create_publisher(UInt8,   'tello/state/bat')
+        self.pub_baro         = self.create_publisher(Float32, 'tello/state/baro')
+        self.pub_time         = self.create_publisher(UInt16,  'tello/state/time')
         self.pub_acceleration = self.create_publisher(Vector3, 'tello/state/acceleration')
 
         # Set timer
@@ -57,40 +57,44 @@ class TelloStateNode(Node):
     def timer_callback(self):
         state, server = self.sock.recvfrom(1024)
 
-        if server:
-            match = self.regex.match(state.decode('utf-8'))
+        if not server:
+            return
 
-            if match:
-                values = match.groups()
-            
-                self.pub_attitude.publish(
-                    Vector3(
-                        x=int(values[0]), 
-                        y=int(values[1]), 
-                        z=int(values[2])
-                    )
-                )
-                self.pub_speed.publish(
-                    Vector3(
-                        x=int(values[3]), 
-                        y=int(values[4]), 
-                        z=int(values[5])
-                    )
-                )
-                self.pub_templ.publish(UInt8(msg=int(values[6])))
-                self.pub_temph.publish(UInt8(msg=int(values[7])))
-                self.pub_tof.publish(UInt8(msg=int(values[8])))
-                self.pub_h.publish(Int8(msg=int(values[9])))
-                self.pub_bat.publish(UInt8(msg=int(values[10])))
-                self.pub_baro.publish(Float32(msg=float(values[11])))
-                self.pub_time.publish(UInt16(msg=int(values[12])))
-                self.pub_acceleration.publish(
-                    Vector3(
-                        x=float(values[13]), 
-                        y=float(values[14]), 
-                        z=float(values[15])
-                    )
-                )
+        match = self.regex.match(state.decode('utf-8'))
+
+        if not match:
+            return
+
+        values = match.groups()
+    
+        self.pub_attitude.publish(
+            Vector3(
+                x=int(values[0]), 
+                y=int(values[1]), 
+                z=int(values[2])
+            )
+        )
+        self.pub_speed.publish(
+            Vector3(
+                x=int(values[3]), 
+                y=int(values[4]), 
+                z=int(values[5])
+            )
+        )
+        self.pub_templ.publish(UInt8(msg=int(values[6])))
+        self.pub_temph.publish(UInt8(msg=int(values[7])))
+        self.pub_tof.publish(UInt8(msg=int(values[8])))
+        self.pub_h.publish(Int8(msg=int(values[9])))
+        self.pub_bat.publish(UInt8(msg=int(values[10])))
+        self.pub_baro.publish(Float32(msg=float(values[11])))
+        self.pub_time.publish(UInt16(msg=int(values[12])))
+        self.pub_acceleration.publish(
+            Vector3(
+                x=float(values[13]), 
+                y=float(values[14]), 
+                z=float(values[15])
+            )
+        )
 
 
 def main(args=None):
