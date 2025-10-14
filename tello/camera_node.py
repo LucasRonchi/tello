@@ -5,7 +5,6 @@ from rclpy.qos import qos_profile_sensor_data
 from std_msgs.msg import Empty
 from sensor_msgs.msg import Image
 
-
 import cv2
 from cv_bridge import CvBridge
 
@@ -43,6 +42,9 @@ class CameraNode(Node):
             # Enable camera
             self.pub_command.publish(Empty())
 
+    def destroy_node(self):
+        self.frame_reader.release()
+        super().destroy_node()
 
 def main(args=None):
     rclpy.init(args=args)

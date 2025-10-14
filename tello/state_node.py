@@ -5,7 +5,7 @@ from rclpy.qos import qos_profile_sensor_data
 from std_msgs.msg import Int8, UInt8, UInt16, Float32
 from geometry_msgs.msg import Vector3
 
-from socket import socket
+import socket
 
 import re
 

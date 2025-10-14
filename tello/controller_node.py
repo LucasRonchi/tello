@@ -3,14 +3,14 @@ from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
 
 from std_msgs.msg import Empty, Int8MultiArray, UInt8, UInt16, String
-from socket import socket
+import socket
 
 # Se criar mensagens customizadas, descomente
 # from my_drone_interfaces.msg import GoTo, Curve
 
 class ControllerNode(Node):
     def __init__(self):
-        super().__init__('control_node')
+        super().__init__('controller_node')
 
         # Conexão com Tello
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -20,12 +20,6 @@ class ControllerNode(Node):
         self._send_command('command')
 
         # Subscriptions
-        self._setup_flight_commands()        # takeoff, land, emergency, stream, flip
-        self._setup_movement_commands()      # up, down, left, right, forward, back, go, curve
-        self._setup_rotation_commands()      # cw, ccw
-        self._setup_configuration_commands() # speed, rc, wifi
-
-    def _setup_flight_commands(self):
         self.sub_takeoff = self.create_subscription(
             Empty,
             'tello/takeoff',
@@ -62,17 +56,42 @@ class ControllerNode(Node):
             lambda msg: self._send_flip_command(msg.data),
             qos_profile_sensor_data,
         )
-
-    def _setup_movement_commands(self):
-        directions = ['up', 'down', 'left', 'right', 'forward', 'back']
-        for dir_name in directions:
-            self.create_subscription(
-                UInt16,
-                f'tello/{dir_name}',
-                lambda msg, d=dir_name: self._send_direction_command(d, msg.data),
-                qos_profile_sensor_data,
-            )
-
+        self.sub_up = self.create_subscription(
+            UInt16,
+            'tello/up',
+            lambda msg: seuplf._send_direction_command('', msg.data),
+            qos_profile_sensor_data,
+        )
+        self.sub_down = self.create_subscription(
+            UInt16,
+            'tello/down',
+            lambda msg: self._send_direction_command('down', msg.data),
+            qos_profile_sensor_data,
+        )
+        self.sub_left = self.create_subscription(
+            UInt16,
+            'tello/left',
+            lambda msg: self._send_direction_command('left', msg.data),
+            qos_profile_sensor_data,
+        )
+        self.sub_right = self.create_subscription(
+            UInt16,
+            'tello/right',
+            lambda msg: self._send_direction_command('right', msg.data),
+            qos_profile_sensor_data,
+        )
+        self.sub_forward = self.create_subscription(
+            UInt16,
+            'tello/forward',
+            lambda msg: self._send_direction_command('forward', msg.data),
+            qos_profile_sensor_data,
+        )
+        self.sub_back = self.create_subscription(
+            UInt16,
+            'tello/back',
+            lambda msg: self._send_direction_command('back', msg.data),
+            qos_profile_sensor_data,
+        )
         self.sub_go = self.create_subscription(
             String,  # trocar para GoTo quando criar mensagem customizada
             'tello/go',
@@ -85,8 +104,6 @@ class ControllerNode(Node):
             lambda msg: self._send_command(f'curve {msg.data}'),
             qos_profile_sensor_data,
         )
-
-    def _setup_rotation_commands(self):
         self.sub_cw = self.create_subscription(
             UInt16,
             'tello/cw',
@@ -101,8 +118,6 @@ class ControllerNode(Node):
             msg.data),
             qos_profile_sensor_data,
         )
-
-    def _init_set_commands_subscription(self):
         self.sub_speed = self.create_subscription(
             UInt8,
             'tello/speed',
@@ -154,9 +169,9 @@ class ControllerNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    control_node = ControlNode()
-    rclpy.spin(control_node)
-    control_node.destroy_node()
+    controller_node = ControllerNode()
+    rclpy.spin(controller_node)
+    controller_node.destroy_node()
     rclpy.shutdown()
 
 

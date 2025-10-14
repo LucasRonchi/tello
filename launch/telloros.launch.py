@@ -1,12 +1,13 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
+
 def generate_launch_description():
     return LaunchDescription([
         Node(
             package='tello',
-            executable='control_node',
-            name='tello_control_node',
+            executable='controller_node',
+            name='tello_controller_node',
             output='screen'
         ),
         Node(
