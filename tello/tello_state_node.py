@@ -55,13 +55,14 @@ class TelloStateNode(Node):
 
 
     def timer_callback(self):
-        state, server = self.sock.recvfrom(1024)
-
-        if not server:
+        try:
+            state_bytes, _ = self.sock.recvfrom(1024)
+            state_str = state_bytes.decode('utf-8')
+        except Exception as e:
+            self.get_logger().warn(f"Failed to read state: {e}")
             return
 
-        match = self.regex.match(state.decode('utf-8'))
-
+        match = self.regex.match(state_str)
         if not match:
             return
 
@@ -81,13 +82,13 @@ class TelloStateNode(Node):
                 z=int(values[5])
             )
         )
-        self.pub_templ.publish(UInt8(msg=int(values[6])))
-        self.pub_temph.publish(UInt8(msg=int(values[7])))
-        self.pub_tof.publish(UInt8(msg=int(values[8])))
-        self.pub_h.publish(Int8(msg=int(values[9])))
-        self.pub_bat.publish(UInt8(msg=int(values[10])))
-        self.pub_baro.publish(Float32(msg=float(values[11])))
-        self.pub_time.publish(UInt16(msg=int(values[12])))
+        self.pub_templ.publish(UInt8(data=int(values[6])))
+        self.pub_temph.publish(UInt8(data=int(values[7])))
+        self.pub_tof.publish(UInt8(data=int(values[8])))
+        self.pub_h.publish(Int8(data=int(values[9])))
+        self.pub_bat.publish(UInt8(data=int(values[10])))
+        self.pub_baro.publish(Float32(data=float(values[11])))
+        self.pub_time.publish(UInt16(data=int(values[12])))
         self.pub_acceleration.publish(
             Vector3(
                 x=float(values[13]), 
