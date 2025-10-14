@@ -1,112 +1,105 @@
 import rclpy
 from rclpy.node import Node
+from rclpy.qos import qos_profile_sensor_data
 
 from std_msgs.msg import Empty, Int8MultiArray, UInt8, UInt16, String
-
 from socket import socket
 
+# Se criar mensagens customizadas, descomente
+# from my_drone_interfaces.msg import GoTo, Curve
 
 class ControlNode(Node):
     def __init__(self):
         super().__init__('control_node')
 
-        # Connect to tello to send commands
+        # Conexão com Tello
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(('', 8889))
 
-        # Start tello sdk
+        # Iniciar SDK
         self._send_command('command')
 
-        # Create control commands
-        self._init_state_commands_subscription()
-        self._init_direction_commands_subscription()
-        self._init_rotate_commands_subscription()
-        self._init_set_commands_subscription()
+        # Subscriptions
+        self._setup_flight_commands()        # takeoff, land, emergency, stream, flip
+        self._setup_movement_commands()      # up, down, left, right, forward, back, go, curve
+        self._setup_rotation_commands()      # cw, ccw
+        self._setup_configuration_commands() # speed, rc, wifi
 
-    def _init_state_commands_subscription(self):
+    def _setup_flight_commands(self):
         self.sub_takeoff = self.create_subscription(
             Empty,
             'tello/takeoff',
             lambda _: self._send_command('takeoff'),
+            qos_profile_sensor_data,
         )
         self.sub_land = self.create_subscription(
             Empty,
             'tello/land',
             lambda _: self._send_command('land'),
+            qos_profile_sensor_data,
         )
         self.sub_streamon = self.create_subscription(
             Empty,
             'tello/streamon',
             lambda _: self._send_command('streamon'),
+            qos_profile_sensor_data,
         )
         self.sub_streamoff = self.create_subscription(
             Empty,
             'tello/streamoff',
             lambda _: self._send_command('streamoff'),
+            qos_profile_sensor_data,
         )
         self.sub_emergency = self.create_subscription(
             Empty,
             'tello/emergency',
             lambda _: self._send_command('emergency'),
+            qos_profile_sensor_data,
         )
         self.sub_flip = self.create_subscription(
             String,
             'tello/flip',
             lambda msg: self._send_flip_command(msg.data),
+            qos_profile_sensor_data,
         )
 
-    def _init_direction_commands_subscription(self):
-        self.sub_up = self.create_subscription(
-            UInt16,
-            'tello/up',
-            lambda msg: self._send_direction_command('up', msg.data),
-        )
-        self.sub_down = self.create_subscription(
-            UInt16,
-            'tello/down',
-            lambda msg: self._send_direction_command('down', msg.data),
-        )
-        self.sub_left = self.create_subscription(
-            UInt16,
-            'tello/left',
-            lambda msg: self._send_direction_command('left', msg.data),
-        )
-        self.sub_right = self.create_subscription(
-            UInt16,
-            'tello/right',
-            lambda msg: self._send_direction_command('right', msg.data),
-        )
-        self.sub_forward = self.create_subscription(
-            UInt16,
-            'tello/forward',
-            lambda msg: self._send_direction_command('forward', msg.data),
-        )
-        self.sub_back = self.create_subscription(
-            UInt16,
-            'tello/back',
-            lambda msg: self._send_direction_command('back', msg.data),
-        )
+    def _setup_movement_commands(self):
+        directions = ['up', 'down', 'left', 'right', 'forward', 'back']
+        for dir_name in directions:
+            self.create_subscription(
+                UInt16,
+                f'tello/{dir_name}',
+                lambda msg, d=dir_name: self._send_direction_command(d, msg.data),
+                qos_profile_sensor_data,
+            )
+
         self.sub_go = self.create_subscription(
-            None,
+            String,  # trocar para GoTo quando criar mensagem customizada
             'tello/go',
-            lambda _: self._send_command('go'),
+            lambda msg: self._send_command(f'go {msg.data}'),
+            qos_profile_sensor_data,
         )
         self.sub_curve = self.create_subscription(
-            None,
+            String,  # trocar para Curve quando criar mensagem customizada
             'tello/curve',
-            lambda _: self._send_command('curve'),
+            lambda msg: self._send_command(f'curve {msg.data}'),
+            qos_profile_sensor_data,
         )
 
-    def _init_rotate_commands_subscription(self):
+    def _setup_rotation_commands(self):
         self.sub_cw = self.create_subscription(
             UInt16,
             'tello/cw',
-            lambda msg: self._send_rotate_command('cw', msg.data),
+            lambda msg: self._send_rotate_command('cw',
+            msg.data),
+            qos_profile_sensor_data,
         )
         self.sub_ccw = self.create_subscription(
             UInt16,
             'tello/ccw',
-            lambda msg: self._send_rotate_command('ccw', msg.data),
+            lambda msg: self._send_rotate_command('ccw',
+            msg.data),
+            qos_profile_sensor_data,
         )
 
     def _init_set_commands_subscription(self):
@@ -114,21 +107,24 @@ class ControlNode(Node):
             UInt8,
             'tello/speed',
             lambda msg: self._send_speed_command(msg.data),
+            qos_profile_sensor_data,
         )
         self.sub_rc = self.create_subscription(
             Int8MultiArray,
             'tello/rc',
             lambda msg: self._send_rc_command(msg.data),
+            qos_profile_sensor_data,
         )
         self.sub_wifi = self.create_subscription(
             String,
             'tello/wifi',
-            lambda msg: self._send_wifi_command(msg.data)
+            lambda msg: self._send_wifi_command(msg.data),
+            qos_profile_sensor_data,
         )
 
     def _send_command(self, command: str):
         self.get_logger().info(f'Send "{command.upper()}" command.')
-        self.sock.sendto(command.encode())
+        self.sock.sendto(command.encode(), ('192.168.10.1', 8889))  # IP padrão do Tello
 
     def _send_flip_command(self, direction):
         if direction in ['left', 'right', 'forward', 'back', 'l', 'r', 'f', 'b']:
