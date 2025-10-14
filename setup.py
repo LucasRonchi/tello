@@ -21,9 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'control_node = tello.control_node:main',
-            'state_node = tello.tello_state_node:main',
-            'camera_node = tello.tello_camera_node:main',
-            'flight_node = tello.tello_flight_node:main',
+            'state_node = tello.state_node:main',
+            'camera_node = tello.camera_node:main',
         ],
     },
 )
