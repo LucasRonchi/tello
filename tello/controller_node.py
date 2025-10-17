@@ -141,6 +141,13 @@ class ControllerNode(Node):
         self.get_logger().info(f'Send "{command.upper()}" command.')
         self.sock.sendto(command.encode(), ('192.168.10.1', 8889))  # IP padrão do Tello
 
+        try:
+            self.sock.settimeout(6)  # espera 2s pela resposta
+            data, _ = self.sock.recvfrom(1024)
+            self.get_logger().info(f'Response: {data.decode()}')
+        except socket.timeout:
+            self.get_logger().warn('Sem resposta do Tello')
+
     def _send_flip_command(self, direction):
         if direction in ['left', 'right', 'forward', 'back', 'l', 'r', 'f', 'b']:
             self._send_command(f'flip {direction[0]}')
