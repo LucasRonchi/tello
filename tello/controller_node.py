@@ -59,7 +59,7 @@ class ControllerNode(Node):
         self.sub_up = self.create_subscription(
             UInt16,
             'tello/up',
-            lambda msg: seuplf._send_direction_command('', msg.data),
+            lambda msg: self._send_direction_command('up', msg.data),
             qos_profile_sensor_data,
         )
         self.sub_down = self.create_subscription(
@@ -166,6 +166,10 @@ class ControllerNode(Node):
         if ssid_password.count(' ') == 1 and not ssid_password.startswith(' ') and not ssid_password.endswith(' '):
             self._send_command(f'wifi {ssid_password}')
 
+    def destroy_node(self):
+        self.get_logger().info('Encerrando conexão com Tello...')
+        self.sock.close()
+        super().destroy_node()
 
 def main(args=None):
     rclpy.init(args=args)
