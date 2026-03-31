@@ -1,5 +1,3 @@
-import time
-
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import qos_profile_sensor_data
@@ -26,7 +24,6 @@ class CameraNode(Node):
         # Set timer
         self.fps = 30
         self.timer = self.create_timer(1 / self.fps, self.timer_callback)
-
 
 
     def timer_callback(self):

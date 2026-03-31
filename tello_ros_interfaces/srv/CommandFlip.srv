@@ -1,0 +1,6 @@
+# REQUEST
+char direction
+---
+# RESPONSE
+bool success
+string message

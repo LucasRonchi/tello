@@ -1,0 +1,6 @@
+# REQUEST
+uint8 speed
+---
+# RESPONSE
+bool success
+string message

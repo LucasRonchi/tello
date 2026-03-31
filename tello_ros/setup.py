@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 import os
 from glob import glob
 
-package_name = 'tello'
+package_name = 'tello_ros'
 
 setup(
     name=package_name,
@@ -16,11 +16,15 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='lucas',
-    maintainer_email='**********************@gmail.com',
+    maintainer='Lucas Ronchi',
+    maintainer_email='lucascronchi2005@gmail.com',
     description='TODO: Package description',
     license='TODO: License declaration',
-    tests_require=['pytest'],
+    extras_require={
+        'test': [
+            'pytest',
+        ],
+    },
     entry_points={
         'console_scripts': [
             'controller_node = tello.controller_node:main',

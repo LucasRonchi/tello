@@ -1,0 +1,12 @@
+# REQUEST
+uint16 x1
+uint16 y1
+uint16 z1
+uint16 x2
+uint16 y2
+uint16 z2
+uint8 speed
+---
+# RESPONSE
+bool success
+string message

@@ -1,0 +1,6 @@
+# REQUEST
+uint16 angle
+---
+# RESPONSE
+bool success
+string message

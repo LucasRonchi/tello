@@ -1,0 +1,7 @@
+# REQUEST
+string ssid
+string password
+---
+# RESPONSE
+bool success
+string message

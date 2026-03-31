@@ -1,0 +1,9 @@
+# REQUEST
+int8 roll
+int8 pitch
+int8 throttle
+int8 yaw
+---
+# RESPONSE
+bool success
+string message

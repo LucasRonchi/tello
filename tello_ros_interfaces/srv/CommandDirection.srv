@@ -1,0 +1,6 @@
+# REQUEST
+uint16 distance
+---
+# RESPONSE
+bool success
+string message
