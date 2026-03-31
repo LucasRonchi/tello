@@ -116,7 +116,7 @@ class ControllerNode(Node):
         )
 
 
-    def _send_command(self, command: str, response):
+    def _send_command(self, command: str, response=None):
         self.get_logger().info(f'Send "{command}" command.')
         self.sock.sendto(command.encode(), ('192.168.10.1', 8889))  # IP padrão do Tello
 
@@ -124,22 +124,26 @@ class ControllerNode(Node):
             self.sock.settimeout(6)
             data, _ = self.sock.recvfrom(1024)
             string = data.decode('utf-8')
-            response.success = False
-            response.message = string
+            if response:
+                response.success = False
+                response.message = string
 
             if string == 'ok':
                 self.get_logger().info(f'Response for "{command}": "{string}".')
-                response.success = True
+                if response:
+                    response.success = True
 
             else:
                 self.get_logger().error(f'Response for "{command}": "{string}".')
 
         except socket.timeout:
             self.get_logger().error(f'Timeout for "{command}".')
-            response.success = False
-            response.message = 'timeout'
+            if response:
+                response.success = False
+                response.message = 'timeout'
         
-        return response
+        if response:
+            return response
 
 
     def destroy_node(self):

@@ -27,9 +27,9 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'controller_node = tello.controller_node:main',
-            'state_node = tello.state_node:main',
-            'camera_node = tello.camera_node:main',
+            'controller_node = tello_ros.controller_node:main',
+            'state_node = tello_ros.state_node:main',
+            'camera_node = tello_ros.camera_node:main',
         ],
     },
 )
