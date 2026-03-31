@@ -1,0 +1,3 @@
+djitellopy
+mediapipe
+opencv-python
